@@ -1,13 +1,16 @@
 package com.example.lei;
 
+import android.R.color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import asia.jeremie.Core;
 import asia.jeremie.Flag;
 
@@ -15,7 +18,7 @@ public class MainActivity extends Activity {
 	Button[] Btn = null;
 	Core core = new Core();
 	int xcount = 9, ycount = 9;
-
+int longing=-1;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -70,6 +73,9 @@ public class MainActivity extends Activity {
 				@Override
 				public void onClick(View v) {
 					int i = (Integer) v.getTag();  //这里的i不能在外部定义，因为内部类的关系，内部类好多繁琐的东西，要好好研究一番
+					if(longing==1){
+						return;
+					}
 					System.out.println(i);
 					Flag flag = core.Hit(i % ycount, i/ xcount);
 					if (flag.equals(Flag.Boom)) {
@@ -78,6 +84,24 @@ public class MainActivity extends Activity {
 						repaint(false);
 					}
 
+				}
+			});
+			Btn[k].setLongClickable(true);
+			Btn[k].setOnLongClickListener(new OnLongClickListener() {
+				@Override
+				public boolean onLongClick(View v) {
+					int i = (Integer) v.getTag();
+					longing=i;
+					Toast.makeText(MainActivity.this,"长时间按下了按钮",   
+						     Toast.LENGTH_LONG  
+						     ).show();
+					
+					if(core.setFlag(i % ycount, i/ xcount)){
+						Btn[ i].setBackgroundResource(R.drawable.ic_launcher);
+					}else{
+						Btn[ i].setBackgroundColor(color.background_light);
+					}
+					return false;
 				}
 			});
 		}
@@ -100,6 +124,9 @@ public class MainActivity extends Activity {
                                     (
                                             core.flag[i][j] ? "▛" : "█"
                                     ));
+					if(core.sf[i][j]){
+						
+					}
 				}
 			}
 		}

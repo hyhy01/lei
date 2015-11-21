@@ -4,6 +4,7 @@ import android.R.color;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,8 +26,7 @@ int longing=-1;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		setView(xcount, ycount);
-		core.initial(xcount, ycount, xcount* ycount / 4, true);
+		reatart();
 	}
 
 	@Override
@@ -56,14 +56,13 @@ int longing=-1;
 		for (int i = 0; i < x*y; i++) {
 			Btn[i] = new Button(this);
 			Btn[i].setId(2000 + i);
-			Btn[i].setText(i +"" );
 			RelativeLayout.LayoutParams btParams = new RelativeLayout.LayoutParams(
 					(width - 50) /(x), 40);  //设置按钮的宽度和高度
 			if (i % x == 0) {
 				j++;
 			}
-			btParams.leftMargin = ((width - 50) / x) * (i % x);  //横坐标定位
-			btParams.topMargin = 40 *j;  //纵坐标定位
+			btParams.leftMargin = ((width - 50) / (x-1)) * (i % x);  //横坐标定位
+			btParams.topMargin = (40+1)*j;  //纵坐标定位
 			layout.addView(Btn[i], btParams); // 将按钮放入layout组件
 		}
 		this.setContentView(layout);
@@ -82,7 +81,6 @@ int longing=-1;
 					if(longing==i){
 						return;
 					}
-					System.out.println(i);
 					Flag flag = core.Hit(i % ycount, i/ xcount);
 					if (flag.equals(Flag.Boom)) {
 						repaint(true);
@@ -101,11 +99,11 @@ int longing=-1;
 					Toast.makeText(MainActivity.this,"长时间按下了按钮"+i,   
 						     Toast.LENGTH_LONG  
 						     ).show();
-					
-					if(core.setFlag(i % ycount, i/ xcount)){
-						Btn[ i].setBackgroundResource(R.drawable.ic_launcher);
+					core.setFlag(i % ycount, i/ xcount);
+					if(core.sf[i/ xcount][i % ycount]){
+						Btn[ i].setBackgroundResource(R.drawable.flag);
 					}else{
-						Btn[ i].setBackgroundColor(color.background_light);
+						Btn[ i].setBackgroundColor(Color.DKGRAY);
 					}
 					return false;
 				}
@@ -117,20 +115,26 @@ int longing=-1;
 		for (int i = 0; i <core.data.length; i++) {
 			for (int j = 0; j <core.data[i].length; j++) {
 				if (showS) {
-					Btn[i *xcount + j ]
-							.setText(core.data[i][j].toInt()+"");
+					Btn[i *xcount + j ].setEnabled(false);
+					Btn[i *xcount + j ].setBackgroundColor(Color.WHITE);
+					if(core.data[i][j].toInt()==-1){
+						Btn[i *xcount + j ].setText("Boom");
+					}else{
+						Btn[i *xcount + j ]
+								.setText(core.data[i][j].toInt()+"");
+					}
 				} else {
-					Btn[ i *xcount + j]
-							.setText(core.mask[i][j] ?
-                                    (
-                                            core.data[i][j].toInt() == 0 ?
-                                                    " " : core.data[i][j].toInt()+""
-                                    )
-                                    :
-                                    (
-                                            core.flag[i][j] ? "▛" : "█"
-                                    ));
-					if(core.sf[i][j]){
+					if(core.mask[i][j]){
+						Btn[ i *xcount + j].setEnabled(false);
+						Btn[ i *xcount + j].setBackgroundColor(Color.GRAY);
+						Btn[ i *xcount + j]
+								.setText(core.data[i][j].toInt()==0?"":core.data[i][j].toInt()+"");
+					}else{
+						if(core.sf[i][j]){
+							Btn[ i *xcount + j].setBackgroundResource(R.drawable.flag);//
+						}else{
+							Btn[ i *xcount + j].setBackgroundColor(Color.DKGRAY);
+						}
 						
 					}
 				}
@@ -149,7 +153,7 @@ int longing=-1;
 		setView(xcount, ycount);
 		core = new Core();
 		core.initial(xcount, ycount, xcount* ycount / 4, true);
-		//repaint(false);
+		repaint(false);
 	}
 
 }

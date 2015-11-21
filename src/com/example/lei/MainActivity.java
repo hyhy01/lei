@@ -3,14 +3,20 @@ package com.example.lei;
 import android.R.color;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import asia.jeremie.Core;
@@ -19,8 +25,12 @@ import asia.jeremie.Flag;
 public class MainActivity extends Activity {
 	private Button[] Btn = null;
 	private Core core = new Core();
-	private int xcount = 9, ycount = 9;
+//	private int xcount = 9, ycount = 9,boomCount=xcount* ycount / 4;
+	private int xcount = 9, ycount = 9,boomCount=xcount* ycount / 4;
 	private int longing=-1;
+	EditText editx;
+	EditText edity;
+	EditText editboom;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -132,13 +142,29 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
 		if(item.getItemId()==Menu.FIRST + 1){
 			reatart();
+		}else{
+			LayoutInflater inflater = getLayoutInflater();
+			View layout = inflater.inflate(R.layout.input,
+			(ViewGroup) findViewById(R.id.input));   new AlertDialog.Builder(this).setTitle("设置").setView(layout)
+			     .setPositiveButton("确定", new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface arg0, int arg1) {
+						xcount=Integer.parseInt(editx.getText().toString());
+						ycount=Integer.parseInt(edity.getText().toString());
+						boomCount=Integer.parseInt(editboom.getText().toString());
+					}
+				})
+			     .setNegativeButton("取消", null).show();
+			editx=(EditText) layout.findViewById(R.id.editText1);
+			edity=(EditText) layout.findViewById(R.id.editText2);
+			editboom=(EditText) layout.findViewById(R.id.editText3);
 		}
         return true;
     }
 	private void reatart() {
 		setView(xcount, ycount);
 		core = new Core();
-		core.initial(xcount, ycount, xcount* ycount / 4, true);
+		core.initial(xcount, ycount,boomCount , true);
 		repaint(false);
 	}
 }

@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.DisplayMetrics;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
@@ -31,7 +32,9 @@ int longing=-1;
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; thisadds items to the action bar if it is present.
+		menu.add(Menu.NONE, Menu.FIRST + 1,1, "重新开始");
 		getMenuInflater().inflate(R.menu.main, menu);
+		
 		return true;
 	}
 
@@ -73,7 +76,10 @@ int longing=-1;
 				@Override
 				public void onClick(View v) {
 					int i = (Integer) v.getTag();  //这里的i不能在外部定义，因为内部类的关系，内部类好多繁琐的东西，要好好研究一番
-					if(longing==1){
+					Toast.makeText(MainActivity.this,"短时间按下了按钮"+i,   
+						     Toast.LENGTH_LONG  
+						     ).show();
+					if(longing==i){
 						return;
 					}
 					System.out.println(i);
@@ -92,7 +98,7 @@ int longing=-1;
 				public boolean onLongClick(View v) {
 					int i = (Integer) v.getTag();
 					longing=i;
-					Toast.makeText(MainActivity.this,"长时间按下了按钮",   
+					Toast.makeText(MainActivity.this,"长时间按下了按钮"+i,   
 						     Toast.LENGTH_LONG  
 						     ).show();
 					
@@ -130,6 +136,20 @@ int longing=-1;
 				}
 			}
 		}
+	}
+	
+	@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+		if(item.getItemId()==Menu.FIRST + 1){
+			reatart();
+		}
+        return true;
+    }
+	private void reatart() {
+		setView(xcount, ycount);
+		core = new Core();
+		core.initial(xcount, ycount, xcount* ycount / 4, true);
+		//repaint(false);
 	}
 
 }
